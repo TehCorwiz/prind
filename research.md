@@ -11,4 +11,11 @@
 - Input Shaping Tool: https://www.youtube.com/watch?v=W_VHbT_tsZw
 - Use: https://www.youtube.com/watch?v=OoWQUcFimX8&t=672s
 - Use: https://www.youtube.com/watch?v=er7q-CJL1lc
+- https://www.klipper3d.org/G-Codes.html#additional-commands
+- 
+# Acceleration
+- https://www.youtube.com/watch?v=IezqWVZZ_iI
 
+# General
+- https://ellis3dp.com/Print-Tuning-Guide/articles/extruder_calibration.html
+- https://github.com/rootiest/zippy_guides/blob/main/README.md
