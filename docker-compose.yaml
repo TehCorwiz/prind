@@ -12,7 +12,11 @@ services:
     depends_on:
       init:
         condition: service_completed_successfully
-    command: -I printer_data/run/klipper.tty -a printer_data/run/klipper.sock printer_data/config/printer.cfg -l printer_data/logs/klippy.log
+    command: >
+      -I printer_data/run/klipper.tty
+      -a printer_data/run/klipper.sock
+      printer_data/config/printer.cfg
+      -l printer_data/logs/klippy.log
     volumes:
       - /dev:/dev
       - ./config:/opt/printer_data/config
@@ -55,7 +59,7 @@ services:
       org.prind.service: moonraker
       traefik.enable: true
       traefik.http.services.moonraker.loadbalancer.server.port: 7125
-      traefik.http.routers.moonraker.rule: PathPrefix(`/websocket`,`/printer`,`/api`,`/access`,`/machine`,`/server`)
+      traefik.http.routers.moonraker.rule: PathRegexp(`^/(websocket|printer|api|access|machine|server)`)
       traefik.http.routers.moonraker.entrypoints: web
 
   ## Frontends
@@ -115,6 +119,7 @@ services:
     profiles:
       - klipperscreen
     volumes:
+      - /run/dbus:/run/dbus
       - /run/systemd:/run/systemd
       - /etc/localtime:/etc/localtime:ro
       - /tmp/.X11-unix:/tmp/.X11-unix
@@ -123,7 +128,7 @@ services:
       org.prind.service: klipperscreen
 
   moonraker-telegram-bot:
-    image: lefskiy/moonraker-telegram-bot:development
+    image: lefskiy/moonraker-telegram-bot:latest
     restart: unless-stopped
     logging:
       driver: none
@@ -158,6 +163,34 @@ services:
     labels:
       org.prind.service: hostmcu
 
+  moonraker-obico:
+    image: ghcr.io/thespaghettidetective/moonraker-obico:latest
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - ./config:/opt/printer_data/config
+      - log:/opt/printer_data/logs
+    profiles:
+      - moonraker-obico
+    labels:
+      org.prind.service: moonraker-obico
+
+  spoolman:
+    image: ghcr.io/donkie/spoolman:latest
+    restart: unless-stopped
+    volumes:
+      - spoolman-db:/home/app/.local/share/spoolman
+    profiles:
+      - spoolman
+    environment:
+      SPOOLMAN_BASE_PATH: /spoolman
+    labels:
+      org.prind.service: spoolman
+      traefik.enable: true
+      traefik.http.services.octoprint.loadbalancer.server.port: 8000
+      traefik.http.routers.octoprint.rule: PathPrefix(`/spoolman`)
+      traefik.http.routers.octoprint.entrypoints: web
+
   ## Accompanying Services/Infra
   ##
 
@@ -173,7 +206,7 @@ services:
 
   ## Loadbalancer/Proxy
   traefik:
-    image: traefik:v2.5
+    image: traefik:3.3
     command:
       - "--accesslog"
       - "--providers.docker=true"
@@ -183,7 +216,7 @@ services:
       - "80:80"
     restart: unless-stopped
     volumes:
-        - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
     labels:
       org.prind.service: traefik
 
@@ -199,3 +232,4 @@ volumes:
     driver_opts:
       type: tmpfs
       device: tmpfs
+  spoolman-db:

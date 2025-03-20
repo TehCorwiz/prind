@@ -1,3 +1,5 @@
+This Image is built and used by [prind](.).
+
 # Klipper packaged in Docker
 ## What is Klipper?
 
@@ -103,8 +105,8 @@ none
 ## Tags
 |Tag|Description|Static|
 |---|---|---|
-|`latest`/`nightly`|Refers to the most recent runtime Image for klippy.|May point to a new build within 24h, depending on code changes in the upstream repository.|
-|`<7-digit-sha>` <br>eg: `d75154d`|Refers to a specific commit SHA in the upstream repository. eg: [Klipper3d/klipper:d75154d](https://github.com/Klipper3d/klipper/commit/d75154d695efb1338cbfff061d226c4f384d127b)|Yes|
+|`latest`|Refers to the most recent runtime Image for klippy.|May point to a new build within 24h, depending on code changes in the upstream repository.|
+|`<git description>` <br>eg: `v0.12.0-114-ga77d0790`|Refers to a specific [git description](https://git-scm.com/docs/git-describe#_examples) in the upstream repository. eg: [Klipper3d/klipper:v0.12.0-114-ga77d0790](https://github.com/Klipper3d/klipper/commit/a77d07907fdfcd76f7175231caee170db205ff04)|Yes|
 |`*-tools`|Refers to Debian Image containing all Tools necessary to Build the Microcontroller code for Klipper|Yes|
 |`*-hostmcu`|Refers to the runtime Image for klipper_mcu.|Yes|
 
@@ -117,3 +119,24 @@ none
 |`run`|Default runtime Image for klippy|Yes|
 |`tools`|Build Tools for MCU code compilation|Yes|
 |`hostmcu`|Runtime Image for the klipper_mcu binary|Yes|
+
+## Healthcheck
+`/opt/health.py` is available to check the health of the container.  
+
+> Be aware that enabling health checks in docker may increase CPU usage drastically.  
+> In tests, cpu usage of the container was doubled when executing the healtch check every 30s and increased sixfold when executing every 5s.  
+> This may lead to resource shortages on low powered host and unwanted behaviour  
+
+The script does the following:
+* queries klippers `info` endpoint via its unix socket
+* Checks if state is `ready`
+* If one of the above requirements is not `ready`, the script exits with a failure state to indicate the container is unhealthy
+
+Compose example:
+```yaml
+services:
+  klipper:
+    healthcheck:
+      test: ["python3", "/opt/health.py"]
+      interval: 30s
+```

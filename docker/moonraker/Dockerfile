@@ -1,21 +1,26 @@
 ## Get Code and Build venv
-FROM python:3-bookworm as build
+FROM python:3.12-bookworm AS build
+
+WORKDIR /opt
+COPY requirements-prind.txt .
+
+RUN python -m venv venv \
+ && venv/bin/pip install -r requirements-prind.txt
 
 ARG REPO=https://github.com/Arksine/moonraker
 ARG VERSION=master
 
-WORKDIR /opt
-
 RUN git clone ${REPO} moonraker \
  && cd moonraker \
  && git checkout ${VERSION} \
+ && echo -n $(git describe --tags)-prind > moonraker/.version \
  && rm -rf .git
 
 RUN python -m venv venv \
  && venv/bin/pip install -r moonraker/scripts/moonraker-requirements.txt
 
 ## Runtime Image
-FROM python:3-slim-bookworm as run
+FROM python:3.12-slim-bookworm AS run
 
 RUN apt update \
  && apt install -y \
@@ -33,6 +38,8 @@ RUN apt update \
       iproute2 \
       systemd \
       sudo \
+      git \
+      jq \
  && apt clean
 
 WORKDIR /opt
@@ -41,6 +48,8 @@ RUN groupadd moonraker --gid 1000 \
  && usermod moonraker --append --groups dialout
 RUN mkdir -p printer_data/run printer_data/gcodes printer_data/logs printer_data/database printer_data/config \
  && chown -R moonraker:moonraker /opt/*
+
+COPY --chown=moonraker:moonraker health.sh ./
 
 COPY --chown=moonraker:moonraker --from=build /opt/moonraker ./moonraker
 COPY --chown=moonraker:moonraker --from=build /opt/venv ./venv

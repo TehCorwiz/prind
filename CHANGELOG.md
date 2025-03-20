@@ -7,12 +7,134 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 <!--
 ## [Unreleased]
 ### Added
+* ci: force image build if source changes in main
 ### Fixed
+### Changed
+* ci: use github action to set up python venv required for build
+### Removed
+
+**Full Changelog**: https://github.com/mkuf/prind/compare/v1.17.0...vX.X.X
+-->
+
+## [v1.17.0] - 2024-11-24
+### Added
+* klipper & moonraker: generate version file during build to correctly display versions (fixes [#74](https://github.com/mkuf/prind/issues/74#issuecomment-2474036799))
+* klipper, moonraker & ustreamer: add health check scripts to container images #178
+* docs: health check examples for each container and in main readme
+### Changed
+* ci: update build requirements #181
+
+**Full Changelog**: https://github.com/mkuf/prind/compare/v1.16.0...v1.17.0
+
+## [v1.16.0] - 2024-11-08
+### Fixed
+* custom: fix config path for klipper in portainer example #165
+* ustreamer: add pkg-config to build stage to fix failing build #171
+### Changed
+* moonraker: update lmdb to 1.5.1 #161
+* traefik: update to 3.2 #163 #174
+* klipperscreen: updated to python 3.13 #175
+* docs: improvements to table of supported applications
+* ci: update actions #159 #162 #164 #167 #168 #169 #170 #173
+* ci: start review workflow on changes to action definitions
+* ci: install build script dependencies in a venv #176
+* ci: do not fail fast for review builds
+* scripts: update build dependencies #166 #172
+* scripts: allow setting image tag suffixes in build.py
+* renovate: automerge updates if review passes
+* renovate: skip python updates for moonraker and klipper
+
+**Full Changelog**: https://github.com/mkuf/prind/compare/v1.15.0...v1.16.0
+
+## [v1.15.0] - 2024-05-30
+### Added
+* docs: note about video device permissions via #155 reported by @d-graz
+* moonraker: install additional requirements prior to upstream requirements, fixes https://github.com/Arksine/moonraker/issues/864
+### Changed
+* docs: rework intro and added table of supported applications
+* spoolman: serve via traefik subpath `/spoolman` instead of container port `8000`
+
+**Full Changelog**: https://github.com/mkuf/prind/compare/v1.14.0...v1.15.0
+
+## [v1.14.0] - 2024-05-06
+### Fixed
+* klipper: revert to python 3.11 base images as klipper does not support 3.12 yet to fix #143 and #150
+### Changed
+* traefik: upgrade to 3
+* moonraker: use `PathRegexp` for router rule to be compatible w/ traefik 3
+* ci: update buildx action to v3.3.0
+* build: upgrade requirements
+
+**Full Changelog**: https://github.com/mkuf/prind/compare/v1.13.0...v1.14.0
+
+## [v1.13.0] - 2024-03-23
+### Added
+- profile: [spoolman by Donkie](https://github.com/Donkie/Spoolman) via #91
+
+**Full Changelog**: https://github.com/mkuf/prind/compare/v1.12.0...v1.13.0
+
+## [v1.12.0] - 2024-03-23
+### Added
+* ci: workflow to build images for pull requests to review
+* custom: add moonraker config snippet for timelapse setup
+### Fixed
+* ustreamer: copy the correct binary to the runtime image and set entrypoint accordingly
+### Changed
+* klipper: update to python 3.12 base image and move additional python requirements to file
+* moonraker: update to python 3.12 base image
+* klipperscreen: update to python 3.12 base image
+* scripts: rewrite build script using python
+* ci: use new build script in github workflows
+* ci: consolidate image specific build workflows into a single matrix workflow
+* ci: consolidate image specific dockerhub description workflows into a single matrix workflow
+* moonraker: make traefik labels compatible with traefik v3.0-rc1
+* moonraker-telegram-bot: use `latest` instead of `development` image via #137
+* chore: update traefik to v2.11 via #127
+
+**Full Changelog**: https://github.com/mkuf/prind/compare/v1.11.0...v1.12.0
+
+## [v1.11.0] - 2024-02-23
+### Changed
+- images: all images will now tagged with the [git description](https://git-scm.com/docs/git-describe#_examples) of the upstream repository instead of a shortened SHA in an attempt to make image versions easier to understand (numbers always go up :rocket:) via #114 and #111
+- docs: reflect new tagging scheme
+
+**Full Changelog**: https://github.com/mkuf/prind/compare/v1.10.0...v1.11.0
+
+## [v1.10.0] - 2024-02-08
+### Added
+- docs: add notes about CANBUS
+- custom: add monitoring example
+- ci: add yamllint action via #110 by @hz61p1
+### Fixed
+- docs: fix volume paths in moonraker examples #102
+- docs: update links to status badges
+### Changed
+- docker: pin base images to python:3.11-(slim-)bookworm
+- extra: simplify moonraker-timelapse setup
+- ci: restructure image build workflows
+- ci: add image docs workflow to update dockerhub descriptions automatically
+- docs: add note about image origin
+
+**Full Changelog**: https://github.com/mkuf/prind/compare/v1.9.1...v1.10.0
+
+## [v1.9.1] - 2023-09-23
+### Fixed
+- klipper: pin numpy to 1.25.2 to fix failing image build on arm/v7 #95
+- custom: added wget to moonraker-timelaps as suggested in https://github.com/mkuf/prind/issues/46#issuecomment-1714421086
+### Changed
+- klipperscreen: mount host dbus into container
+- moonraker-obico: run service in privileged mode
+
+**Full Changelog**: https://github.com/mkuf/prind/compare/v1.9.0...v1.9.1
+
+## [v1.9.0] - 2023-08-20
+### Added
+- profile: moonraker-obico via #89
 ### Changed
 - docker: update repo url for KlipperScreen
 - scripts: exclude `out` and `resonances` directory from support archive
-### Removed
--->
+
+**Full Changelog**: https://github.com/mkuf/prind/compare/v1.8.0...v1.9.0
 
 ## [v1.8.0] - 2023-08-06
 ### Added
